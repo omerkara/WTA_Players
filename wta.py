@@ -165,6 +165,7 @@ def get_data():
     players['dob'] = players['dob'].where(players['dob'] < now, players['dob'] -  np.timedelta64(100, 'Y'))
     players['age'] = (now - players['dob']).astype('<m8[Y]') 
     players['hand'].fillna("-",inplace=True)
+    all_players = players['full_name'].to_list()
 
     rank_current = pd.read_csv("tennis_wta/wta_rankings_current.csv")
     rank_20 = pd.read_csv("tennis_wta/wta_rankings_20s.csv")
@@ -181,21 +182,21 @@ def get_data():
     FechaRank(ranks)
     r = pd.concat(ranks)
 
-    return matches, matchesh2h, players, rank_current, r
+    return matches, matchesh2h, players, rank_current, r, all_players
 
 
 
 with header:
     with st.columns(3)[1]:
         st.image("wta.png")
-        matches, matchesh2h, players, rank_current, r = get_data() 
+        matches, matchesh2h, players, rank_current, r, all_players = get_data() 
 
 with player:
     st.markdown("<h1 style='text-align: center;'>PLAYER STATS</h1>", unsafe_allow_html=True)
     st.subheader("Select a player to know her stats.")
     img, info = st.columns([3, 2])
     
-    player = info.selectbox('Player name', options=players['full_name'].to_list(), index=14543)
+    player = info.selectbox('Player name', options=all_players, index=14543)
 
     playinfo = players[players['full_name'] == player]
     first_name = playinfo.iloc[0][1]
@@ -279,7 +280,7 @@ with h2h:
     st.write("")
     st.markdown("<h1 style='text-align: center;'>HEAD 2 HEAD</h1>", unsafe_allow_html=True)
     st.subheader("Select another player to know H2H.")
-    player2 = h2h.selectbox('Player name', options=players['full_name'].to_list(), index=11767)
+    player2 = h2h.selectbox('Player name', options=all_players, index=11767)
 
     playinfo2 = players[players['full_name'] == player2]
     id_2 = playinfo2.iloc[0][0]
