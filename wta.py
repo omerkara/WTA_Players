@@ -286,28 +286,6 @@ with player:
     st.markdown(f"<h5 style='text-align: left;'>Current Ranking: {str(curr_rank)}</h5>", unsafe_allow_html=True)
     st.markdown(f"<h5 style='text-align: left;'>Year Highest Ranking: {str(highest_curr_rank)}</h5>", unsafe_allow_html=True)
     st.markdown(f"<h5 style='text-align: left;'>Career Highest Ranking: {str(career_high)}</h5>", unsafe_allow_html=True)
-    
-    st.write('First name: ', first_name)
-    st.write('Last name: ', last_name)
-
-    st.write('Age: ', age)
-    st.write('Date of Birth: ', dob)
-
-    col1, col2 = st.columns([1,5])
-    with col1:
-        st.write('Country: ', country)
-    with col2:
-        st.image(flag, width=63)
-    
-
-    st.write('Height: ', height)
-    st.write('Plays: ', hand)
-
-    st.write('Current Ranking: ', str(curr_rank))
-    st.write('Year Highest Ranking: ', str(highest_curr_rank))
-    st.write('Career Highest Ranking: ', str(career_high))
-    
-
 
         
 with h2h:
