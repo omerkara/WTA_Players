@@ -10,11 +10,21 @@ pd.set_option('display.max_rows', None)
 
 logo = Image.open('wta_logo.png')
 
-st.set_page_config( page_title='WTA STATS', page_icon=logo)
+st.set_page_config( page_title='WTA', page_icon=logo)
+
 
 header = st.container()
 player = st.container()
 h2h = st.container()
+
+hide_menu = """
+<style>
+    #MainMenu {
+        visibility:hidden;}
+    footer {
+        visibility: hidden;}
+</style>
+"""
 
 @st.cache_data
 def get_data(): 
@@ -185,6 +195,7 @@ def get_data():
 
     return matches, matchesh2h, players, rank_current, r, all_players
 
+st.markdown(hide_menu, unsafe_allow_html=True)
 
 
 with header:
@@ -192,12 +203,17 @@ with header:
         st.image("wta.png")
         matches, matchesh2h, players, rank_current, r, all_players = get_data() 
 
+
 with player:
-    st.markdown("<h1 style='text-align: center;'>PLAYER STATS</h1>", unsafe_allow_html=True)
-    st.subheader("Select a player to know her stats.")
-    img, info = st.columns([3, 2])
+    col1, col2, col3 = st.columns([1.09,2,1])
+    with col2:
+        st.title("PLAYER STATS", anchor=False)
+    st.write('')
+    st.write('')
     
-    player = info.selectbox('Player name', options=all_players, index=14542)
+    img, b, info = st.columns([2,1,3])
+    
+    player = img.selectbox('Select player:', options=all_players, index=14542)
 
     playinfo = players[players['full_name'] == player]
     first_name = playinfo.iloc[0][1]
@@ -268,33 +284,36 @@ with player:
     lost_player1 = len(matches[(matches['loser_id'] == id_)])
     won_player1 = len(matches[(matches['winner_id'] == id_)])
 
-    st.markdown(f"<h3 style='text-align: left;'>{first_name} {last_name}</h3>", unsafe_allow_html=True)
+    with info:
+        st.markdown(f"<h3 style='text-align: left;'>{first_name} {last_name}</h3>", unsafe_allow_html=True)
 
-    st.markdown(f"<h5 style='text-align: left;'>Age: {age}</h5>", unsafe_allow_html=True)
-    st.markdown(f"<h5 style='text-align: left;'>Date of Birth: {dob}</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5 style='text-align: left;'>Age: {age}</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5 style='text-align: left;'>Date of Birth: {dob}</h5>", unsafe_allow_html=True)
 
-    col1, col2, col3 = st.columns([1,0.9, 4.1])
-    with col1:
-        st.markdown(f"<h5 style='text-align: left;'>Country:</h5>", unsafe_allow_html=True)
-        st.markdown(f"<h5 style='text-align: left; size = 500 px'> {country}</h5>", unsafe_allow_html=True)
-    with col2:
-        st.image(flag, width=63, use_column_width="always")
+        col1, col2, col3, col4 = st.columns([2,1.3, 0.8, 1])
+        with col1:
+            st.markdown(f"<h5 style='text-align: left;'>Country:</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h5 style='text-align: left; size = 500 px'> {country}</h5>", unsafe_allow_html=True)
+        with col2:
+            st.image(flag, width=63, use_column_width="always")
 
-    st.markdown(f"<h5 style='text-align: left;'>Height: {height}</h5>", unsafe_allow_html=True)
-    st.markdown(f"<h5 style='text-align: left;'>Plays: {hand}</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5 style='text-align: left;'>Height: {height}</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5 style='text-align: left;'>Plays: {hand}</h5>", unsafe_allow_html=True)
 
-    st.markdown(f"<h5 style='text-align: left;'>Current Ranking: {str(curr_rank)}</h5>", unsafe_allow_html=True)
-    st.markdown(f"<h5 style='text-align: left;'>Year Highest Ranking: {str(highest_curr_rank)}</h5>", unsafe_allow_html=True)
-    st.markdown(f"<h5 style='text-align: left;'>Career Highest Ranking: {str(career_high)}</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5 style='text-align: left;'>Current Ranking: {str(curr_rank)}</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5 style='text-align: left;'>Year Highest Ranking: {str(highest_curr_rank)}</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5 style='text-align: left;'>Career Highest Ranking: {str(career_high)}</h5>", unsafe_allow_html=True)
 
-        
+            
+            
 with h2h:
     st.write("")
     st.write("")
     st.write("")
     st.markdown("<h1 style='text-align: center;'>HEAD 2 HEAD</h1>", unsafe_allow_html=True)
-    st.subheader("Select another player to know H2H.")
-    player2 = h2h.selectbox('Player name', options=all_players, index=6250)
+    st.write("")
+    st.write("")
+    player2 = h2h.selectbox('Select another player to know H2H:', options=all_players, index=6250)
 
     playinfo2 = players[players['full_name'] == player2]
     id_2 = playinfo2.iloc[0][0]
@@ -535,6 +554,9 @@ with h2h:
         st.write("")
         st.write("")
         st.markdown("<h3 style='text-align: center;'>PREVIOUS MATCHES</h3>", unsafe_allow_html=True)
+        st.write("")
+        st.write("")
+
         won_player2_df = matchesh2h[(matchesh2h['winner_id'] == id_2) & (matchesh2h['loser_id'] == id_)]
         matches_played = pd.concat([won_player1_df, won_player2_df])
         matches_played.sort_values(by='tourney_date', ascending=False, inplace=True)
@@ -585,8 +607,8 @@ with h2h:
                     color_p1 = '#b3b3b3'
 
                 with tournament:
-                    st.markdown(f"<h4 style='text-align: left;'>{tournament_name}</h4>", unsafe_allow_html=True)
-                    st.markdown(f"<h5 style='text-align: left;'>{surface}</h5>", unsafe_allow_html=True)
+                    st.markdown(f"<h4 style='text-align: left;'>{tournament_name}</h5>", unsafe_allow_html=True)
+                    st.markdown(f"<h6 style='text-align: left;'>{surface}</h6>", unsafe_allow_html=True)
                     st.markdown(f"<div style='text-align: left;'>{date}</div>", unsafe_allow_html=True)
 
                 with players:
@@ -594,11 +616,11 @@ with h2h:
                     pl2 = st.container()
 
                     with pl1:
-                        st.markdown(f"<h3 style='text-align: left; color:{color_p1};'>{player} {ret_pl2}</h3>", unsafe_allow_html=True)
+                        st.markdown(f"<h4 style='text-align: left; color:{color_p1};'>{player} {ret_pl2}</h3>", unsafe_allow_html=True)
 
                     with pl2:
                         st.markdown("<div style='text-align: center;color:#7814ff;'>S</div>", unsafe_allow_html=True)
-                        st.markdown(f"<h3 style='text-align: left;color:{color_p2};'>{player2} {ret_pl2}</h3>", unsafe_allow_html=True)
+                        st.markdown(f"<h4 style='text-align: left;color:{color_p2};'>{player2} {ret_pl2}</h3>", unsafe_allow_html=True)
 
                 with result:
 
@@ -608,37 +630,37 @@ with h2h:
                         pl2 = st.container()
 
                         with pl1:
-                            st.markdown(f"<h3 style='text-align: left;color:{color_p1};'>{s1_p1}</h3>", unsafe_allow_html=True)
+                            st.markdown(f"<h4 style='text-align: left;color:{color_p1};'>{s1_p1}</h4>", unsafe_allow_html=True)
 
                         with pl2:
                             st.markdown("<div style='text-align: center;color:#7814ff;'>S</div>", unsafe_allow_html=True)
-                            st.markdown(f"<h3 style='text-align: left;color:{color_p2};'>{s1_p2}</h3>", unsafe_allow_html=True)
+                            st.markdown(f"<h4 style='text-align: left;color:{color_p2};'>{s1_p2}</h4>", unsafe_allow_html=True)
 
                     with r2: 
                         pl1 = st.container()
                         pl2 = st.container()
 
                         with pl1:
-                            st.markdown(f"<h3 style='text-align: left;color:{color_p1};'>{s2_p1}</h3>", unsafe_allow_html=True)
+                            st.markdown(f"<h4 style='text-align: left;color:{color_p1};'>{s2_p1}</h4>", unsafe_allow_html=True)
 
                         with pl2:
                             st.markdown("<div style='text-align: center;color:#7814ff;'>S</div>", unsafe_allow_html=True)
-                            st.markdown(f"<h3 style='text-align: left;color:{color_p2};'>{s2_p2}</h3>", unsafe_allow_html=True)
+                            st.markdown(f"<h4 style='text-align: left;color:{color_p2};'>{s2_p2}</h4>", unsafe_allow_html=True)
 
                     with r3: 
                         pl1 = st.container()
                         pl2 = st.container()
 
                         with pl1:
-                            st.markdown(f"<h3 style='text-align: left;color:{color_p1};'>{s3_p1}</h3>", unsafe_allow_html=True)
+                            st.markdown(f"<h4 style='text-align: left;color:{color_p1};'>{s3_p1}</h4>", unsafe_allow_html=True)
 
                         with pl2:
                             st.markdown("<div style='text-align: center;color:#7814ff;'>S</div>", unsafe_allow_html=True)
-                            st.markdown(f"<h3 style='text-align: left;color:{color_p2};'>{s3_p2}</h3>", unsafe_allow_html=True)
+                            st.markdown(f"<h4 style='text-align: left;color:{color_p2};'>{s3_p2}</h4>", unsafe_allow_html=True)
 
-                    st.write("")
-                    st.write("")
-                    st.write("")
+                st.write("")
+                st.divider()
+                st.write("")
         else:
             st.markdown(f"""<div style="text-align: center;">These players haven't face each other</div>""", unsafe_allow_html=True)
 
