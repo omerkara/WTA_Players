@@ -391,19 +391,19 @@ with h2h:
             last_name2 = playinfo2.iloc[0][2]
 
             try:
-                dob2 = playinfo.iloc[0][4].strftime('%b %d, %Y')
-                age2 = str(int(playinfo.iloc[0][10]))
+                dob2 = playinfo2.iloc[0][4].strftime('%b %d, %Y')
+                age2 = str(int(playinfo2.iloc[0][10]))
             except:
                 dob2 = '-'
                 age2 = '-'
 
-            if not pd.isna(playinfo.iloc[0][5]):
-                country2 = players.iloc[0][5]
+            if not pd.isna(playinfo2.iloc[0][5]):
+                country2 = playinfo2.iloc[0][5]
             else:
                 country2 = ''
 
             try:
-                height2 = str(int(playinfo.iloc[0][6]))
+                height2 = str(int(playinfo2.iloc[0][6]))
             except:
                 height2 = '-'
             
