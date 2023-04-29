@@ -204,14 +204,14 @@ with player:
     last_name = playinfo.iloc[0][2]
 
     try:
-        dob = playinfo.iloc[2][4].strftime('%b %d, %Y')
+        dob = playinfo.iloc[0][4].strftime('%b %d, %Y')
         age = str(int(playinfo.iloc[0][10]))
     except:
         dob = '-'
         age = '-'
 
     if not pd.isna(playinfo.iloc[0][5]):
-        country = players.iloc[0][5]
+        country = playinfo.iloc[0][5]
     else:
         country = ''
 
@@ -268,6 +268,25 @@ with player:
     lost_player1 = len(matches[(matches['loser_id'] == id_)])
     won_player1 = len(matches[(matches['winner_id'] == id_)])
 
+    st.markdown(f"<h3 style='text-align: left;'>{first_name} {last_name}</h3>", unsafe_allow_html=True)
+
+    st.markdown(f"<h5 style='text-align: left;'>Age: {age}</h5>", unsafe_allow_html=True)
+    st.markdown(f"<h5 style='text-align: left;'>Date of Birth: {dob}</h5>", unsafe_allow_html=True)
+
+    col1, col2, col3 = st.columns([1,0.9, 4.1])
+    with col1:
+        st.markdown(f"<h5 style='text-align: left;'>Country:</h5>", unsafe_allow_html=True)
+        st.markdown(f"<h5 style='text-align: left; size = 500 px'> {country}</h5>", unsafe_allow_html=True)
+    with col2:
+        st.image(flag, width=63, use_column_width="always")
+
+    st.markdown(f"<h5 style='text-align: left;'>Height: {height}</h5>", unsafe_allow_html=True)
+    st.markdown(f"<h5 style='text-align: left;'>Plays: {hand}</h5>", unsafe_allow_html=True)
+
+    st.markdown(f"<h5 style='text-align: left;'>Current Ranking: {str(curr_rank)}</h5>", unsafe_allow_html=True)
+    st.markdown(f"<h5 style='text-align: left;'>Year Highest Ranking: {str(highest_curr_rank)}</h5>", unsafe_allow_html=True)
+    st.markdown(f"<h5 style='text-align: left;'>Career Highest Ranking: {str(career_high)}</h5>", unsafe_allow_html=True)
+    
     st.write('First name: ', first_name)
     st.write('Last name: ', last_name)
 
