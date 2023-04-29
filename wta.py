@@ -546,7 +546,7 @@ with h2h:
                         ret_pl2 = ''
 
 
-            tournament, players, result = st.columns([2, 4.2, 0.7])
+            tournament, players, result = st.columns([2, 4, 1])
 
             if id_ == winner_id:
                 color_p1 = '#fff'
