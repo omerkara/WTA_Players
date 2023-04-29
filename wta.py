@@ -219,7 +219,7 @@ with player:
         curr_rank_row = year_rank.loc[year_rank['ranking_date'] == year_rank['ranking_date'].max()]
         curr_rank = curr_rank_row.iloc[0][1]
     else:
-        curr_rank = 'No longer active'
+        curr_rank = '-'
 
     if ~playinfo['image'].isnull().values.any():
         image = playinfo.iloc[0][7]
@@ -235,7 +235,7 @@ with player:
     if (rank_current['player'] == id_).any():
         highest_curr_rank = rank_current.loc[rank_current['player'] == id_].min()[1]
     else:
-        highest_curr_rank = 'No longer active'
+        highest_curr_rank = '-'
     
     if (r['player'] == id_).any():
         career_high = int(r.loc[r['player'] == id_].min()[1])
@@ -285,7 +285,7 @@ with h2h:
     playinfo2 = players[players['full_name'] == player2]
     id_2 = playinfo2.iloc[0][0]
     
-    play1, brk, result, play2 = st.columns([2.7,0.4, 2.4,2.7])
+    play1, brk, result, play2 = st.columns([2.7,0.3, 2.3,2.7])
 
     with play1:
         play1.image(
@@ -369,7 +369,7 @@ with h2h:
             curr_rank_row2 = year_rank2.loc[year_rank2['ranking_date'] == year_rank2['ranking_date'].max()]
             curr_rank2 = curr_rank_row2.iloc[0][1]
         else:
-            curr_rank2 = 'No longer active'
+            curr_rank2 = '-'
 
         if ~playinfo2['image'].isnull().values.any():
             image2 = playinfo2.iloc[0][7]
