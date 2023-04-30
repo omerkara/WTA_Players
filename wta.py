@@ -9,13 +9,19 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.max_rows', None)
 
 logo = Image.open('wta_logo.png')
-
 st.set_page_config( page_title='WTA', page_icon=logo)
 
 
 header = st.container()
 player = st.container()
 h2h = st.container()
+
+color_field = 'white'
+color_info = 'white'
+color_achieved = '#e6e6e6'
+color_letter = 'white'
+color_rank = 'white'
+color_h2h = 'white'
 
 hide_menu = """
 <style>
@@ -237,7 +243,7 @@ with player:
         country = ''
 
     try:
-        height = str(int(playinfo.iloc[0][6])) + " cm"
+        height = str(int(playinfo.iloc[0][6]))
     except:
         height = '-'
 
@@ -269,45 +275,76 @@ with player:
                 width=350
             )
 
-        
-    if (rank_current['player'] == id_).any():
-        highest_curr_rank = rank_current.loc[rank_current['player'] == id_].min()[1]
-    else:
-        highest_curr_rank = '-'
+    player1_wta_singlestitles = len(matches[(matches['winner_id'] == id_) & (matches['round'] == 'F')])
     
     if (r['player'] == id_).any():
         career_high = int(r.loc[r['player'] == id_].min()[1])
+        date_achieved = r[(r['player'] == id_) & (r['rank'] == career_high)].min()[0].strftime('%b %d, %Y')
     else:
         career_high = '-'
+        date_achieved = ''
 
     if ~playinfo['flag'].isnull().values.any():
         flag = playinfo.iloc[0][8]
     else:
         flag = 'flag.png'
 
-    player1_wta_singlestitles = len(matches[(matches['winner_id'] == id_) & (matches['round'] == 'F')])
     lost_player1 = len(matches[(matches['loser_id'] == id_)])
     won_player1 = len(matches[(matches['winner_id'] == id_)])
 
-    with info:
-        st.markdown(f"<h3 style='text-align: left;'>{first_name} {last_name}</h3>", unsafe_allow_html=True)
 
-        st.markdown(f"<h5 style='text-align: left;'>Age: {age}</h5>", unsafe_allow_html=True)
-        st.markdown(f"<h5 style='text-align: left;'>Date of Birth: {dob}</h5>", unsafe_allow_html=True)
+    with info:
+
+        st.markdown(f"<h3 style='text-align: left;color: {color_letter};'>{first_name} {last_name}</h3>", unsafe_allow_html=True)
+
+        field, data = st.columns([.8,4])
+        with field:
+            st.markdown(f"<h5 style='text-align: left; color: {color_field};'>Age:</h5>", unsafe_allow_html=True)
+        with data:
+            st.markdown(f"<h5 style='text-align: left;color: {color_info};'>{age}</h5>", unsafe_allow_html=True)
+
+        field, data = st.columns([3,2.5])
+        with field:
+            st.markdown(f"<h5 style='text-align: left; color: {color_field};'>Date of Birth:</h5>", unsafe_allow_html=True)
+        with data:
+            st.markdown(f"<h5 style='text-align: left;color: {color_info};'>{dob}</h5>", unsafe_allow_html=True)
 
         col1, col2, col3, col4 = st.columns([2,1.3, 0.8, 1])
         with col1:
-            st.markdown(f"<h5 style='text-align: left;'>Country:</h5>", unsafe_allow_html=True)
-            st.markdown(f"<h5 style='text-align: left; size = 500 px'> {country}</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h5 style='text-align: left; color:{color_field};'>Country:</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h5 style='text-align: left; color: {color_info};'> {country}</h5>", unsafe_allow_html=True)
         with col2:
             st.image(flag, width=63, use_column_width="always")
 
-        st.markdown(f"<h5 style='text-align: left;'>Height: {height}</h5>", unsafe_allow_html=True)
-        st.markdown(f"<h5 style='text-align: left;'>Plays: {hand}</h5>", unsafe_allow_html=True)
+        field, data = st.columns([1.1,2.5])
+        with field:
+            st.markdown(f"<h5 style='text-align: left;color:{color_field};'>Height:</h5>", unsafe_allow_html=True)
+        with data:
+            st.markdown(f"<h5 style='text-align: left;color: {color_info};'>{height} cm</h5>", unsafe_allow_html=True)
 
-        st.markdown(f"<h5 style='text-align: left;'>Current Ranking: {str(curr_rank)}</h5>", unsafe_allow_html=True)
-        st.markdown(f"<h5 style='text-align: left;'>Year Highest Ranking: {str(highest_curr_rank)}</h5>", unsafe_allow_html=True)
-        st.markdown(f"<h5 style='text-align: left;'>Career Highest Ranking: {str(career_high)}</h5>", unsafe_allow_html=True)
+        field, data = st.columns([1.1,2.8])
+        with field:   
+            st.markdown(f"<h5 style='text-align: left;color:{color_field};'>Plays:</h5>", unsafe_allow_html=True)
+        with data:
+            st.markdown(f"<h5 style='text-align: left;color: {color_info};'>{hand}</h5>", unsafe_allow_html=True)
+
+        field, data = st.columns([5,2.8])
+        with field: 
+            st.markdown(f"<h5 style='text-align: left; color:{color_field}'>Current Ranking: </h5>", unsafe_allow_html=True)
+        with data:
+            st.markdown(f"<h5 style='text-align: left;color: {color_info};'>{str(curr_rank)}</h5>", unsafe_allow_html=True)
+
+        field, data, ach = st.columns([3,0.5,2.3])
+        with field: 
+            st.markdown(f"<h5 style='text-align: left;color:{color_field}'>Career High:</h5>", unsafe_allow_html=True)
+        with data:
+            st.markdown(f"<h5 style='text-align: left;color: {color_info}'>{str(career_high)}</h5>", unsafe_allow_html=True)
+
+        field, data = st.columns([1.8,1])
+        with field:
+            st.markdown(f"<h5 style='text-align: left; color:{color_field};'>Singles Titles:</h5>", unsafe_allow_html=True)
+        with data:
+            st.markdown(f"<h5 style='text-align: left;color: {color_info};'>{str(player1_wta_singlestitles)} </h5>", unsafe_allow_html=True)
 
             
             
@@ -346,7 +383,7 @@ with h2h:
             with col1:
                 st.markdown(f"<div style='text-align: left;'>Ranking</div>", unsafe_allow_html=True)
             with col2:
-                st.markdown(f"<h5 style='text-align: left; color:black;'><b>{curr_rank}</b></h5>", unsafe_allow_html=True)
+                st.markdown(f"<h5 style='text-align: left; color:{color_rank};'><b>{curr_rank}</b></h5>", unsafe_allow_html=True)
 
         with result:
             st.write("")
@@ -369,10 +406,10 @@ with h2h:
             st.write("")
 
 
-            won_player1_df = (matches[(matches['winner_id'] == id_) & (matches['loser_id'] == id_2)])
+            won_player1_df = (matchesh2h[(matchesh2h['winner_id'] == id_) & (matchesh2h['loser_id'] == id_2) & (matchesh2h['score'] != 'W/O')])
             matches_player1 = len(won_player1_df)
 
-            won_player2_df = (matches[(matches['winner_id'] == id_2) & (matches['loser_id'] == id_)])
+            won_player2_df = matchesh2h[(matchesh2h['winner_id'] == id_2) & (matchesh2h['loser_id'] == id_) & (matchesh2h['score'] != 'W/O')]
             matches_player2 = len(won_player2_df)
 
 
@@ -433,8 +470,10 @@ with h2h:
             
             if (r['player'] == id_2).any():
                 career_high2 = int(r.loc[r['player'] == id_2].min()[1])
+                date_achieved2 = r[(r['player'] == id_) & (r['rank'] == career_high)].min()[0].strftime('%b %d, %Y')
             else:
                 career_high2 = '-'
+                date_achieved2 = ''
 
             if ~playinfo2['flag'].isnull().values.any():
                 flag2 = playinfo2.iloc[0][8]
@@ -462,7 +501,7 @@ with h2h:
 
             col1, col2, col3 = st.columns([1, 2, 2])
             with col2:
-                st.markdown(f"<h5 style='text-align: right; color:black;'><b>{curr_rank2}</b></h5>", unsafe_allow_html=True)
+                st.markdown(f"<h5 style='text-align: right; color:{color_rank};'><b>{curr_rank2}</b></h5>", unsafe_allow_html=True)
             with col3:
                 st.markdown(f"<div style='text-align: right;'>Ranking</div>", unsafe_allow_html=True)
 
@@ -479,13 +518,17 @@ with h2h:
             with pl1c:
                 st.markdown("<h3 style='text-align: center;color:#7814ff;'>S</h3>", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: left;">{player1_wta_singlestitles}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: left;color:{color_h2h};">{player1_wta_singlestitles}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: left;">{won_player1}/{lost_player1}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: left;color:{color_h2h};">{won_player1}/{lost_player1}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: left;">{career_high}</div>""", unsafe_allow_html=True)
+                one, two = st.columns([0.5,3])
+                with one:
+                    st.markdown(f"""<div style="text-align: left;color:{color_h2h};">{career_high}</div>""", unsafe_allow_html=True)
+                with two:
+                    st.markdown(f"""<div style="text-align: left;color: {color_achieved}">{date_achieved}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: left;">{curr_rank}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: left;color:{color_h2h};">{curr_rank}</div>""", unsafe_allow_html=True)
 
 
             with infoc:
@@ -503,13 +546,17 @@ with h2h:
             with pl2c:
                 st.markdown("<h3 style='text-align: center;color:#7814ff;'>S</h3>", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: right;">{player2_wta_singlestitles}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: right;color:{color_h2h};">{player2_wta_singlestitles}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: right;">{won_player2}/{lost_player2}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: right;color:{color_h2h};">{won_player2}/{lost_player2}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: right;">{career_high2}</div>""", unsafe_allow_html=True)
+                one, two = st.columns([3,0.5])
+                with one:
+                    st.markdown(f"""<div style="text-align: right;color: {color_achieved}">{date_achieved2}</div>""", unsafe_allow_html=True)
+                with two:
+                    st.markdown(f"""<div style="text-align: right;color:{color_h2h};;">{career_high2}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: right;">{curr_rank2}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: right;color:{color_h2h};">{curr_rank2}</div>""", unsafe_allow_html=True)
 
 
             st.markdown("<h3 style='text-align: center;color:#7814ff;'>S</h3>", unsafe_allow_html=True)
@@ -519,13 +566,13 @@ with h2h:
             with pl1:
                 st.markdown("<h3 style='text-align: center;color:#7814ff;'>S</h3>", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: left;">{age}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: left;color:{color_h2h};">{age}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: left;">{dob}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: left;color:{color_h2h};">{dob}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: left;">{height}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: left;color:{color_h2h};">{height}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: left;">{hand}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: left;color:{color_h2h};">{hand}</div>""", unsafe_allow_html=True)
 
 
             with info:
@@ -542,19 +589,17 @@ with h2h:
             with pl2:
                 st.markdown("<h3 style='text-align: center;color:#7814ff;'>S</h3>", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: right;">{age2}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: right;color:{color_h2h};">{age2}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: right;">{dob2}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: right;color:{color_h2h};;">{dob2}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: right;">{height2}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: right;color:{color_h2h};">{height2}</div>""", unsafe_allow_html=True)
                 st.write("")
-                st.markdown(f"""<div style="text-align: right;">{hand2}</div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div style="text-align: right;color:{color_h2h};">{hand2}</div>""", unsafe_allow_html=True)
 
         matches = st.container()
 
         with matches:
-
-            won_player1_df = (matchesh2h[(matchesh2h['winner_id'] == id_) & (matchesh2h['loser_id'] == id_2)])
 
 
             st.write("")
@@ -565,7 +610,6 @@ with h2h:
             st.write("")
             st.write("")
 
-            won_player2_df = matchesh2h[(matchesh2h['winner_id'] == id_2) & (matchesh2h['loser_id'] == id_)]
             matches_played = pd.concat([won_player1_df, won_player2_df])
             matches_played.sort_values(by='tourney_date', ascending=False, inplace=True)
 
@@ -576,44 +620,43 @@ with h2h:
                     date = row['tourney_date'].year
                     winner_id = row['winner_id']
                     loser_id = row['loser_id']
-                    if row['set_1'] != 'W/O':
-                        if id_ == row['winner_id']:
-                            s1_p1 = row['set_1_player_1']
-                            s2_p1_r = row['set_2_player_1_r']
-                            s2_p1_t = row['set_2_player_1_t']
-                            s3_p1_r = row['set_3_player_1_r']
-                            s3_p1_t = row['set_3_player_1_t']
-                            s1_p2_r = row['set_1_player_2_r']
-                            s1_p2_t = row['set_1_player_2_t']
-                            s2_p2_r = row['set_2_player_2_r']
-                            s2_p2_t = row['set_2_player_2_t']
-                            s3_p2_r = row['set_3_player_2_r']
-                            s3_p2_t = row['set_3_player_2_t']
-                            if ((row['set_1'] == 'RET') |(row['set_2'] == 'RET')|(row['set_3'] == 'RET')):
-                                ret_pl2 = 'RET'
-                                ret_pl1 = ''
-                            else:
-                                ret_pl1 = ''
-                                ret_pl2 = ''
+                    if id_ == row['winner_id']:
+                        s1_p1 = row['set_1_player_1']
+                        s2_p1_r = row['set_2_player_1_r']
+                        s2_p1_t = row['set_2_player_1_t']
+                        s3_p1_r = row['set_3_player_1_r']
+                        s3_p1_t = row['set_3_player_1_t']
+                        s1_p2_r = row['set_1_player_2_r']
+                        s1_p2_t = row['set_1_player_2_t']
+                        s2_p2_r = row['set_2_player_2_r']
+                        s2_p2_t = row['set_2_player_2_t']
+                        s3_p2_r = row['set_3_player_2_r']
+                        s3_p2_t = row['set_3_player_2_t']
+                        if ((row['set_1'] == 'RET') |(row['set_2'] == 'RET')|(row['set_3'] == 'RET')):
+                            ret_pl2 = 'RET'
+                            ret_pl1 = ''
+                        else:
+                            ret_pl1 = ''
+                            ret_pl2 = ''
 
-                        if id_ == row['loser_id']:
-                            s1_p2 = row['set_1_player_1']
-                            s2_p2_r = row['set_2_player_1_r']
-                            s2_p2_t = row['set_2_player_1_t']
-                            s3_p2_r = row['set_3_player_1_r']
-                            s3_p2_t = row['set_3_player_1_t']
-                            s1_p1_r = row['set_1_player_2_r']
-                            s1_p1_t = row['set_1_player_2_t']
-                            s2_p1_r = row['set_2_player_2_r']
-                            s2_p1_t = row['set_2_player_2_t']
-                            s3_p1_r = row['set_3_player_2_r']
-                            s3_p1_t = row['set_3_player_2_t']
-                            if ((row['set_1'] == 'RET') |(row['set_2'] == 'RET')|(row['set_3'] == 'RET')):
-                                ret_pl1 = 'RET'
-                                ret_pl2 = ''
-                            else:
-                                ret_pl1 = ''
-                                ret_pl2 = ''
+                    if id_ == row['loser_id']:
+                        s1_p2 = row['set_1_player_1']
+                        s2_p2_r = row['set_2_player_1_r']
+                        s2_p2_t = row['set_2_player_1_t']
+                        s3_p2_r = row['set_3_player_1_r']
+                        s3_p2_t = row['set_3_player_1_t']
+                        s1_p1_r = row['set_1_player_2_r']
+                        s1_p1_t = row['set_1_player_2_t']
+                        s2_p1_r = row['set_2_player_2_r']
+                        s2_p1_t = row['set_2_player_2_t']
+                        s3_p1_r = row['set_3_player_2_r']
+                        s3_p1_t = row['set_3_player_2_t']
+                        if ((row['set_1'] == 'RET') |(row['set_2'] == 'RET')|(row['set_3'] == 'RET')):
+                            ret_pl1 = 'RET'
+                            ret_pl2 = ''
+                        else:
+                            ret_pl1 = ''
+                            ret_pl2 = ''
 
 
                     tournament, players, result = st.columns([1.9, 3.5, 2.3])
