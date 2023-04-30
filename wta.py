@@ -14,6 +14,7 @@ st.set_page_config( page_title='WTA', page_icon=logo)
 
 header = st.container()
 player = st.container()
+grandslam = st.container()
 h2h = st.container()
 
 color_field = 'white'
@@ -22,6 +23,8 @@ color_achieved = '#e6e6e6'
 color_letter = 'white'
 color_rank = 'white'
 color_h2h = 'white'
+color_tournament = 'white'
+color_matchesinfo = 'white'
 
 hide_menu = """
 <style>
@@ -152,7 +155,7 @@ def get_data():
 
 
     def DropColumnsYear(ynnn):
-        columns = ['tourney_id', 'tourney_name', 'surface', 'tourney_date', 'winner_id', 'winner_name', 
+        columns = ['tourney_id', 'tourney_name', 'surface', 'tourney_level','tourney_date', 'winner_id', 'winner_name', 
                 'loser_id', 'loser_name', 'score', 'round', 'winner_rank', 'loser_rank']
         ynnn.drop(ynnn.columns.difference(columns), 1, inplace=True)
         ynnn['tourney_date'] = pd.to_datetime(ynnn['tourney_date'], format='%Y%m%d', errors='coerce')
@@ -164,6 +167,7 @@ def get_data():
 
     dataset = CleanDF(dataset)
     matches = pd.concat(dataset)
+
     matchesh2h = matches.copy()
     matchesh2h[['set_1', 'set_2', 'set_3']] = matchesh2h['score'].str.split(' ', n=2, expand=True)
     matchesh2h[['set_1_player_1', 'set_1_player_2']] = matchesh2h['set_1'].str.split('-', n=1, expand=True)
@@ -176,6 +180,10 @@ def get_data():
     matchesh2h[['set_3_player_2_r', 'set_3_player_2_t']] = matchesh2h['set_3_player_2'].str.split('(', n=1, expand=True)
     matchesh2h.fillna("-",inplace=True)
 
+    grand_slam = matches[matches['tourney_level'] == 'G']
+    grand_slam['round'] = grand_slam['round'].astype("category")
+    grand_slam['round'] = grand_slam['round'].cat.set_categories(['R128', 'R64', 'R32', 'R16', 'QF', 'SF','F'], 
+                                                             ordered=True)
 
     players = pd.read_csv("tennis_wta/wta_players.csv")
     players = players.iloc[2:,:]
@@ -204,7 +212,7 @@ def get_data():
     FechaRank(ranks)
     r = pd.concat(ranks)
 
-    return matches, matchesh2h, players, rank_current, r, all_players
+    return matches, matchesh2h, players, rank_current, r, all_players, grand_slam
 
 st.markdown(hide_menu, unsafe_allow_html=True)
 
@@ -212,7 +220,7 @@ st.markdown(hide_menu, unsafe_allow_html=True)
 with header:
     with st.columns(3)[1]:
         st.image("wta.png")
-        matches, matchesh2h, players, rank_current, r, all_players = get_data() 
+        matches, matchesh2h, players, rank_current, r, all_players, grand_slam = get_data() 
 
 
 with player:
@@ -244,8 +252,10 @@ with player:
 
     try:
         height = str(int(playinfo.iloc[0][6]))
+        heightcm = height + ' cm'
     except:
         height = '-'
+        heightcm = '-'
 
     if playinfo.iloc[0][3] == 'R':
         hand = 'Right-Handed'
@@ -320,7 +330,7 @@ with player:
         with field:
             st.markdown(f"<h5 style='text-align: left;color:{color_field};'>Height:</h5>", unsafe_allow_html=True)
         with data:
-            st.markdown(f"<h5 style='text-align: left;color: {color_info};'>{height} cm</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h5 style='text-align: left;color: {color_info};'>{heightcm}</h5>", unsafe_allow_html=True)
 
         field, data = st.columns([1.1,2.8])
         with field:   
@@ -345,6 +355,147 @@ with player:
             st.markdown(f"<h5 style='text-align: left; color:{color_field};'>Singles Titles:</h5>", unsafe_allow_html=True)
         with data:
             st.markdown(f"<h5 style='text-align: left;color: {color_info};'>{str(player1_wta_singlestitles)} </h5>", unsafe_allow_html=True)
+
+
+with grandslam:
+    st.write("")
+    st.write("")
+    st.write("")
+    st.markdown("<h2 style='text-align: center;'>GRAND SLAMS RESULT</h2>", unsafe_allow_html=True)
+
+    player_gs = grand_slam[(grand_slam['winner_id'] == id_) | (grand_slam['loser_id'] == id_)]
+    total_gs_df = player_gs[(player_gs['round'] == 'F')  & (player_gs['winner_id'] == id_)]
+    total_gs = len(total_gs_df)
+    australian_open_df = total_gs_df[((total_gs_df['tourney_name'] == 'Australian Championships')|
+                            (total_gs_df['tourney_name'] == 'Australian Open')|
+                            (total_gs_df['tourney_name'] == 'Australian Open 2'))
+                           & (total_gs_df['round'] == 'F')]
+    australian_open = len(australian_open_df)
+    wimbledon_df = total_gs_df[(total_gs_df['tourney_name'] == 'Wimbledon')
+                           & (total_gs_df['round'] == 'F')]
+    wimbledon = len(wimbledon_df)
+    roland_garros_df = total_gs_df[((total_gs_df['tourney_name'] == 'French Championships')|
+                            (total_gs_df['tourney_name'] == 'Roland Garros'))
+                           & (total_gs_df['round'] == 'F')]
+    roland_garros = len(roland_garros_df)
+    us_open_df = total_gs_df[((total_gs_df['tourney_name'] == 'US National Championships')|
+                            (total_gs_df['tourney_name'] == 'US Open')|
+                            (total_gs_df['tourney_name'] == 'Us Open'))
+                           & (total_gs_df['round'] == 'F')]
+    us_open = len(us_open_df)
+
+    ao_matches = player_gs[((player_gs['tourney_name'] == 'Australian Championships')|
+                            (player_gs['tourney_name'] == 'Australian Open')|
+                            (player_gs['tourney_name'] == 'Australian Open 2'))]
+    ao_max = ao_matches['round'].max()
+    date_achieved_ao_max = ao_matches[(ao_matches['round'] == ao_max)].min()[4].year
+    wim_matches = player_gs[(player_gs['tourney_name'] == 'Wimbledon')]
+    wim_max = wim_matches['round'].max()
+    date_achieved_wim_max = wim_matches[(wim_matches['round'] == wim_max)].min()[4].year
+    rg_matches = player_gs[((player_gs['tourney_name'] == 'French Championships')|
+                            (player_gs['tourney_name'] == 'Roland Garros'))]
+    rg_max = rg_matches['round'].max()
+    date_achieved_rg_max = rg_matches[(rg_matches['round'] == rg_max)].min()[4].year
+    uso_matches = player_gs[((player_gs['tourney_name'] == 'US National Championships')|
+                            (player_gs['tourney_name'] == 'US Open')|
+                            (player_gs['tourney_name'] == 'Us Open'))]
+    uso_max = uso_matches['round'].max()
+    date_achieved_uso_max = uso_matches[(uso_matches['round'] == uso_max)].min()[4].year
+
+    def NameRound(tour_max, tour):
+        if tour_max == 'F' and tour > 0:
+            tour_max = 'W'
+        return tour_max
+    
+    ao_max = NameRound(ao_max, australian_open)
+    rg_max = NameRound(rg_max, roland_garros)
+    wim_max = NameRound(wim_max, wimbledon)
+    uso_max = NameRound(uso_max, us_open)
+    
+    if not (pd.isna(ao_max) and pd.isna(wim_max) and pd.isna(rg_max) and pd.isna(uso_max)):
+
+        if pd.isna(ao_max):
+            ao_max = '-'
+            date_achieved_ao_max = '-'
+        if pd.isna(rg_max):
+            rg_max = '-'
+            date_achieved_rg_max = '-'
+        if pd.isna(wim_max):
+            wim_max = '-'
+            date_achieved_wim_max = '-'
+        if pd.isna(uso_max):
+            uso_max = '-'
+            date_achieved_uso_max = '-'
+
+
+        ao_pic = 'https://photoresources.wtatennis.com/photo-resources/2020/01/14/b9671227-8364-473d-84b5-9d3125214290/au-open.png?height=140'
+        wim_pic= 'https://photoresources.wtatennis.com/photo-resources/2020/01/14/89afeaa8-c80e-46dd-abeb-512783d8f166/wimbledon-1-.png?height=140'
+        rg_pic = 'https://photoresources.wtatennis.com/photo-resources/2020/01/14/8e815fbc-b17d-49ef-90aa-ac1674facdf6/fr-open.png?height=140'
+        uso_pic = 'https://photoresources.wtatennis.com/photo-resources/2020/01/14/d19a09e7-5489-447b-893e-672ecd50155b/us-open.png?height=140'
+
+        if total_gs > 0:
+            st.write('')
+            st.markdown(f"<h3 style='text-align: center;'>Grand Slams: {total_gs}</h3>", unsafe_allow_html=True)
+        if australian_open > 0:
+            st.markdown(f"<h5 style='text-align: center;'>Australian Open: {australian_open}</h5>", unsafe_allow_html=True)
+        if roland_garros > 0:
+            st.markdown(f"<h5 style='text-align: center;'>Roland Garros: {roland_garros}</h5>", unsafe_allow_html=True)
+        if wimbledon > 0:
+            st.markdown(f"<h5 style='text-align: center;'>Wimbledon: {wimbledon}</h5>", unsafe_allow_html=True)
+        if us_open > 0:
+            st.markdown(f"<h5 style='text-align: center;'>US Open: {us_open}</h5>", unsafe_allow_html=True)
+
+        st.write('')
+        st.write('')
+        st.markdown(f"<h3 style='text-align: center;'>BEST RESULTS</h3>", unsafe_allow_html=True)
+        st.write('')
+
+        ao, b1, rg, b2, wim, b3, uso = st.columns(7)
+        with ao:
+            st.write('')
+            ao.image(
+                ao_pic,
+                width=350,
+                use_column_width="always"
+            )
+            st.write('')
+            st.write('')
+            st.markdown(f"<h5 style='text-align: center;'>{ao_max}</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h6 style='text-align: center;'>{date_achieved_ao_max}</h6>", unsafe_allow_html=True)
+        with rg:
+            rg.image(
+                rg_pic,
+                width=350,
+                use_column_width="always"
+            )
+            st.write('')
+            st.markdown(f"<h5 style='text-align: center;'>{rg_max}</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h6 style='text-align: center;'>{date_achieved_rg_max}</h6>", unsafe_allow_html=True)
+        with wim:
+            wim.image(
+                wim_pic,
+                width=350,
+                use_column_width="always"
+            )
+            st.write('')
+            st.markdown(f"<h5 style='text-align: center;'>{wim_max}</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h6 style='text-align: center;'>{date_achieved_wim_max}</h6>", unsafe_allow_html=True)
+        with uso:
+            st.write('')
+            uso.image(
+                uso_pic,
+                width=350,
+                use_column_width="always"
+            )
+            st.write('')
+            st.write('')
+            st.markdown(f"<h5 style='text-align: center;'>{uso_max}</h5>", unsafe_allow_html=True)
+            st.markdown(f"<h6 style='text-align: center;'>{date_achieved_uso_max}</h6>", unsafe_allow_html=True)
+
+    else:
+        st.markdown(f"<h5 style='text-align: center;'>This player has not participated in Grand Slams yet</h5>", unsafe_allow_html=True)
+
+
 
             
             
@@ -534,13 +685,13 @@ with h2h:
             with infoc:
                 st.markdown("<h3 style='text-align: center;'>CAREER STATS</h3>", unsafe_allow_html=True)
                 st.write("")
-                st.markdown('<div style="text-align: center;">WTA Singles Titles</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="text-align: center;color:{color_field};">WTA Singles Titles</div>', unsafe_allow_html=True)
                 st.write("")
-                st.markdown('<div style="text-align: center;">W/L Singles</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="text-align: center;color:{color_field};">W/L Singles</div>', unsafe_allow_html=True)
                 st.write("")
-                st.markdown('<div style="text-align: center;">Career Highest Ranking</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="text-align: center;color:{color_field};">Career Highest Ranking</div>', unsafe_allow_html=True)
                 st.write("")
-                st.markdown('<div style="text-align: center;">Current ranking</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="text-align: center;color:{color_field};">Current ranking</div>', unsafe_allow_html=True)
                 st.write("")
 
             with pl2c:
@@ -578,13 +729,13 @@ with h2h:
             with info:
                 st.markdown("<h3 style='text-align: center;'>PLAYER PROFILES</h3>", unsafe_allow_html=True)
                 st.write("")
-                st.markdown('<div style="text-align: center;">Age</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="text-align: center;color:{color_field};">Age</div>', unsafe_allow_html=True)
                 st.write("")
-                st.markdown('<div style="text-align: center;">Date of Birth</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="text-align: center;color:{color_field};">Date of Birth</div>', unsafe_allow_html=True)
                 st.write("")
-                st.markdown('<div style="text-align: center;">Height (cm)</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="text-align: center;color:{color_field};">Height (cm)</div>', unsafe_allow_html=True)
                 st.write("")
-                st.markdown('<div style="text-align: center;">Plays</div>', unsafe_allow_html=True)
+                st.markdown(f'<div style="text-align: center;color:{color_field};">Plays</div>', unsafe_allow_html=True)
 
             with pl2:
                 st.markdown("<h3 style='text-align: center;color:#7814ff;'>S</h3>", unsafe_allow_html=True)
@@ -617,6 +768,7 @@ with h2h:
                 for index, row in matches_played.iterrows():
                     tournament_name = row['tourney_name']
                     surface = row['surface']
+                    round = row['round']
                     date = row['tourney_date'].year
                     winner_id = row['winner_id']
                     loser_id = row['loser_id']
@@ -670,9 +822,9 @@ with h2h:
 
                     with tournament:
                         st.text('')
-                        st.markdown(f"<h5 style='text-align: left;'>{tournament_name}</h5   >", unsafe_allow_html=True)
-                        st.markdown(f"<h6 style='text-align: left;'>{surface}</h6>", unsafe_allow_html=True)
-                        st.markdown(f"<div style='text-align: left;'>{date}", unsafe_allow_html=True)
+                        st.markdown(f"<h5 style='text-align: left; color:{color_tournament};'>{tournament_name}</h5   >", unsafe_allow_html=True)
+                        st.markdown(f"<h6 style='text-align: left; color:{color_matchesinfo};'>{round}</h6>", unsafe_allow_html=True)
+                        st.markdown(f"<div style='text-align: left; color:{color_matchesinfo};'>{date}", unsafe_allow_html=True)
 
                     with players:
                         pl1 = st.container()
