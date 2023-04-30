@@ -470,7 +470,7 @@ with h2h:
             
             if (r['player'] == id_2).any():
                 career_high2 = int(r.loc[r['player'] == id_2].min()[1])
-                date_achieved2 = r[(r['player'] == id_) & (r['rank'] == career_high)].min()[0].strftime('%b %d, %Y')
+                date_achieved2 = r[(r['player'] == id_2) & (r['rank'] == career_high)].min()[0].strftime('%b %d, %Y')
             else:
                 career_high2 = '-'
                 date_achieved2 = ''
