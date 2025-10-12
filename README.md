@@ -16,22 +16,22 @@ A Streamlit web application that allows users to explore historic data on WTA (W
 This project analyzes a historic WTA dataset containing player profiles and match outcomes.
 The main goal was to make tennis data accessible and interactive through a simple, web-based interface.
 
-The app combines data exploration and sports analytics, enabling users to gain insights into players’ matches, performance, and career trajectory.
+The app enables users to gain insights into players’ matches, performance, and career trajectory.
 
 ⸻
 
 ## 🚀 Features
-* 🔍 Player Search: Find any player from 1920–2023
+* 🔍 Player Search: Find any player from 1980–2023
 * 📊 Player Overview: View player info, match records, and statistics
 * ⚔️ Head-to-Head Comparison: Select two players to see their match history and results
-* 🌐 Streamlit Web Interface: Clean, fast, and user-friendly
+* 🌐 Streamlit Web Interface: Clean and user-friendly
 
 ⸻
 
 ## 🛠️ Tech Stack
 * Python – Data processing and backend logic
 * Streamlit – Web application framework
-* Pandas / NumPy – Data manipulation and analysis
+* Pandas – Data manipulation
 
 ⸻
 
@@ -47,7 +47,7 @@ The app combines data exploration and sports analytics, enabling users to gain i
 
 ## 📂 Dataset
 * Source: [Jeff Sackmann](https://github.com/JeffSackmann/tennis_wta) 
-* Ranking (dqte, points, player)
+* Ranking (date, points, player)
 * Player details (name, nationality, ranking, photo, etc.)
 * Match results (date, surface, tournament, score)
 
